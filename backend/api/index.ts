@@ -1,18 +1,25 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { handle } from 'hono/vercel';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
 const prisma = new PrismaClient();
-const app = new Hono();
+const app = new Hono().basePath('/');
 
 // CORS
 app.use('*', cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || '*',
-  credentials: true,
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Health check
+app.get('/health', (c) => {
+  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Auth routes
 app.post('/api/auth/register', async (c) => {
@@ -145,6 +152,7 @@ app.get('/api/agents', async (c) => {
       }
     });
   } catch (error) {
+    console.error('Get agents error:', error);
     return c.json({ error: 'Failed to fetch agents' }, 500);
   }
 });
@@ -255,12 +263,10 @@ app.post('/api/tasks', async (c) => {
   }
 });
 
-// Health check
-app.get('/health', (c) => {
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // 404
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 
-export default app;
+export const GET = handle(app);
+export const POST = handle(app);
+export const PUT = handle(app);
+export const DELETE = handle(app);
