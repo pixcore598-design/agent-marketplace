@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "api/index.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -13,10 +12,5 @@
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.5.0",
     "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.13.10",
-    "typescript": "^5.8.2"
   }
 }
