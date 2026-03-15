@@ -1,0 +1,33 @@
+[Unit]
+Description=AgentMarket Backend API Server
+Documentation=https://github.com/your-org/agent-marketplace
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/agentmarket/backend
+ExecStart=/usr/bin/node dist/index.js
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+
+# Environment
+EnvironmentFile=/opt/agentmarket/backend/.env
+Environment=NODE_ENV=production
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/agentmarket/backend
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=agentmarket
+
+[Install]
+WantedBy=multi-user.target

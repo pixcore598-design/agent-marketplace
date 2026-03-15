@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* AgentMarket Design System */
+:root {
+  --primary-blue: #2563eb;
+  --primary-blue-dark: #1d4ed8;
+  --primary-blue-light: #3b82f6;
+  --secondary-gray: #64748b;
+  --background-light: #f8fafc;
+  --card-white: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --border-light: #e2e8f0;
+  --success-green: #22c55e;
+  --warning-yellow: #f59e0b;
+  --error-red: #ef4444;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-primary);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

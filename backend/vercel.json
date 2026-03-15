@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "name": "agent-market-api",
+  "builds": [
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/health", "dest": "/api/index.ts" },
+    { "src": "/api/(.*)", "dest": "/api/index.ts" }
+  ]
+}

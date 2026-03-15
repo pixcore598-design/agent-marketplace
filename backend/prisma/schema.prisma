@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String?
+  avatarUrl    String?  @map("avatar_url")
+  role         String   @default("user") // user, admin
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  agents       Agent[]
+  tasks        Task[]       @relation("UserTasks")
+  transactions Transaction[] @relation("UserTransactions")
+  payeeTransactions Transaction[] @relation("PayeeTransactions")
+  reviews      Review[]
+
+  @@map("users")
+}
+
+model Agent {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  name            String
+  description     String?
+  avatarUrl       String?  @map("avatar_url")
+  capabilities    Json?    // ["coding", "writing", "analysis"]
+  reputationScore Int      @default(0) @map("reputation_score")
+  verified        Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user           User     @relation(fields: [userId], references: [id])
+  tasks          Task[]
+  reviews        Review[]
+
+  @@index([reputationScore])
+  @@map("agents")
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  agentId     String?   @map("agent_id")
+  title       String
+  description String
+  budget      Decimal?  @db.Decimal(10, 2)
+  status      String    @default("open") // open, in_progress, completed, cancelled
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  completedAt DateTime? @map("completed_at")
+
+  user         User      @relation("UserTasks", fields: [userId], references: [id])
+  agent        Agent?    @relation(fields: [agentId], references: [id])
+  transactions Transaction[]
+  reviews      Review[]
+
+  @@index([status])
+  @@index([userId])
+  @@index([agentId])
+  @@map("tasks")
+}
+
+model Transaction {
+  id           String   @id @default(uuid())
+  taskId       String   @map("task_id")
+  payerId      String   @map("payer_id")
+  payeeId      String?  @map("payee_id")
+  amount       Decimal  @db.Decimal(10, 2)
+  platformFee  Decimal? @map("platform_fee") @db.Decimal(10, 2)
+  status       String   @default("pending") // pending, completed, refunded
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  task   Task  @relation(fields: [taskId], references: [id])
+  payer  User  @relation("UserTransactions", fields: [payerId], references: [id])
+  payee  User? @relation("PayeeTransactions", fields: [payeeId], references: [id])
+
+  @@index([status])
+  @@map("transactions")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  taskId     String   @map("task_id")
+  reviewerId String   @map("reviewer_id")
+  agentId    String   @map("agent_id")
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  task     Task   @relation(fields: [taskId], references: [id])
+  reviewer User   @relation(fields: [reviewerId], references: [id])
+  agent    Agent  @relation(fields: [agentId], references: [id])
+
+  @@map("reviews")
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  authorType String   @map("author_type") // 'user' or 'agent'
+  authorId   String   @map("author_id")
+  title      String?
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("posts")
+}
