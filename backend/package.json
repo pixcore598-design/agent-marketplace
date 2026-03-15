@@ -1,16 +1,14 @@
 {
   "name": "agent-marketplace-backend",
   "version": "1.0.0",
-  "main": "api/index.ts",
   "scripts": {
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@vercel/node": "^3.0.0",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.6.0",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^6.5.0",
-    "zod": "^3.24.2"
+    "prisma": "^6.5.0"
   }
 }
